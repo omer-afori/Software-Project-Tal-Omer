@@ -45,26 +45,6 @@ double distance(double* vec1, double* vec2){
 	return sqrt(sum);
 }
 
-
-int count_char(char* string, char ch){
-	int count = 0;
-	size_t i = 0;
-	for(i = 0; i < strlen(string); i++){
-		if (string[i] == ch){
-			count++;
-		}
-	}
-	return count;
-}
-
-/*void print_vec(double* vec){
-	int i;
-	for (i = 0; i < dimension-1; i++){
-		printf("%f,",vec[i]);
-	}
-	printf("%f\n", vec[dimension-1]);
-}*/
-
 void print_vec(double* vec){
 	int i;
 	for (i = 0; i < dimension-1; i++){
@@ -96,7 +76,6 @@ double* get_vector(){
 	
 	vector = malloc(sizeof(double)*dimension);
 	if (!vector){
-		/*FREE*/
 		printf("in get vector\n");
 		printf(error_msg);
 		exit(1);
@@ -105,17 +84,9 @@ double* get_vector(){
 		if (lineptr[i] == '\0'){
 			vector[counter] = atof(lineptr + index*sizeof(char));
 			index = i+1;
-			/*printf("%f ", vector[counter]);*/
 			counter++;
 		}
 	}
-	/*
-	printf("\nk,d,n are: %d %d %d\n", k, dimension, vector_count);
-	for(i = 0; i < 3; i++){
-		printf("%f ", vector[i]);
-	}
-	printf("\n");
-	print_vec(vector);*/
 	return vector;
 }
 
@@ -146,33 +117,7 @@ void set_globals(){
 	prev_node->next = 0;
 	return;
 }
-double* average_cluster(node_t* cluster){
-	double* centroid = malloc(sizeof(double)*dimension);
-	int i = 0;
-	int j = 0;
-	int cluster_len = 0;
-	node_t* current_node = cluster;
-	if (!centroid){
-		printf("in average_cluster\n");
-		printf(error_msg);
-		/*FREE*/
-		exit(1);
-	}
-	for (i = 0; i < dimension; i++){
-		centroid[i] = 0.0;
-	}
-	while(current_node) {
-		cluster_len += 1;
-		for (j = 0; j < dimension; j++){
-			centroid[j] += current_node->vec[j];
-		}
-		current_node = current_node->next;
-	}
-	for (i = 0; i < dimension; i++){
-		centroid[i] = centroid[i]/cluster_len;
-	}
-	return centroid;
-}
+
 int find_closest_cluster(double* vec, double** centroids){
 	double min_d = distance(vec, centroids[0]);
 	double d;
@@ -187,6 +132,7 @@ int find_closest_cluster(double* vec, double** centroids){
 	} 
 	return min_index;
 }
+
 double** update_centroids(double** centroids){
 	node_t* current_node = head;
 	double** new_centroids;
@@ -222,15 +168,7 @@ double** update_centroids(double** centroids){
 		}
 		current_node = current_node->next;
 	}
-	/*DEBUG*/
-	/*
-	for(i = 0; i < k; i++){
-		for(j = 0; j < dimension; j++){
-			printf("%f ", new_centroids[i][j]);
-		}
-		printf("\n");
-	}
-	*/
+	
 	for(i = 0; i < k; i++){
 		for(j = 0; j < dimension; j++){
 			new_centroids[i][j] = new_centroids[i][j]/lengths[i];
@@ -240,71 +178,6 @@ double** update_centroids(double** centroids){
 
 	return new_centroids;
 }
-
-/*
-double** update_centroids(double** centroids){
-	node_t** clusters;
-	node_t** last_nodes;
-	double* cur_vec;
-	int index;
-	double** new_centroids;
-	int i = 0;
-	node_t* current_node = head;
-
-	last_nodes = malloc(sizeof(node_t*)*k);
-	clusters = malloc(sizeof(node_t*)*k);
-	if (!clusters || !last_nodes){
-		printf("update_centroids - 1\n");
-		printf(error_msg);
-		exit(1);
-	}
-	new_centroids = malloc(sizeof(double*)*k);
-	if (!new_centroids){
-		printf("update_centroids - 4\n");
-		printf(error_msg);
-		exit(1);
-	}
-	for (i = 0; i < k; i++){
-		clusters[i] = (node_t*)malloc(sizeof(node_t));
-		if(!clusters[i]){
-			printf("update_centroids - 3\n");
-			printf(error_msg);
-			exit(1);
-		}
-	}
-	while(current_node){
-		cur_vec = current_node->vec;
-		index = find_closest_cluster(vec, centroids);
-
-
-
-		if (!last_nodes[index]){
-			last_nodes[index] = (node_t*)malloc(sizeof(node_t));
-		}
-		else{
-			last_nodes[index]->next = (node_t*)malloc(sizeof(node_t));
-			last_nodes[index] = last_nodes[index]->next;
-		}
-		if(!last_nodes[index]){
-			printf(error_msg);
-			exit(1);
-		}
-		last_nodes[index]->vec = cur_vec;
-		last_nodes[index]->next = 0;
-	}
-
-	
-	for(i = 0; i < k; i++){
-		new_centroids[i] = average_cluster(clusters[i]);
-	}
-	for(i = 0; i < k; i++){
-		free_list_without_content(clusters[i]);
-	}
-	free(clusters);
-	free(last_nodes);
-	return new_centroids;
-}
-*/
 
 double* copy_vec(double* vec){
 	double* ans_vec;
@@ -326,7 +199,6 @@ double** initialize_centroids(){
 	double* vec;
 	int i = 0;
 	if (!centroids){
-		/*FREE*/
 		printf("init_centroids\n");
 		printf(error_msg);
 		exit(1);
@@ -426,14 +298,9 @@ int main(int argc, char* argv[]){
 	centroids = initialize_centroids();
 
 	for (i = 0; i < iter; i++){
-		/*printf("round num: %d\n", i);*/
 
 		new_centroids = update_centroids(centroids);
-		/*
-		for(j = 0; j < k; j++){
-			print_vec(new_centroids[j]);
-		}
-		printf("\n");*/
+
 		if (convergence(centroids, new_centroids)){
 			free_centroids(new_centroids);
 			break;
