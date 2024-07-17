@@ -264,7 +264,7 @@ double** norm_wrapper(double** head, int return_mat, int length, int dimension){
         return norm_matrix;
     }
     else{
-        print_matrix(norm_matrix, n, n);
+        /*print_matrix(norm_matrix, n, n);*/
         /*free_matrix(norm_matrix, n);*/
         return (double**)1;
     }

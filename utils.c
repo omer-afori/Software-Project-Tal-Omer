@@ -82,9 +82,10 @@ double** mat_mult_transpose(double** mat, int length, int width){
 
 void print_vec(double* vec, int length){
     int i;
-    for(i = 0; i < length; i++){
-        printf("%.4f ", vec[i]);
+    for(i = 0; i < length-1; i++){
+        printf("%.4f,", vec[i]);
     }
+    printf("%.4f", vec[length-1]);
     printf("\n");
 }
 
