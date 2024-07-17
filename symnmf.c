@@ -114,7 +114,7 @@ void initialize_globals_file(char *filename){
         exit(-1);
     }
     d = count_char(line, linelen, ',') + 1;
-    free(line);
+    /*free(line);*/
     count = 1; /* assume exactly one blank line at the end of the file */
     while ((ch = fgetc(file)) != EOF){
         if (ch == '\n'){
