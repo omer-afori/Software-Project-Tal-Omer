@@ -26,7 +26,9 @@ double* get_vector(FILE *file){
 		printf(error_msg);
 		return NULL;
 	}
-
+    if (strncmp(lineptr, "\n", 1) == 0){
+        return (double*)1;
+    }
 	for (i = 0; i < linelen; i++){
 		if (lineptr[i] == ',' || lineptr[i] == '\n'){
 			lineptr[i] = '\0';
@@ -80,6 +82,9 @@ double** initialize_vectors(char* filename){
     }
     for (i=0; i<n; i++){
         vector = get_vector(file);
+        if (vector == (double*)1){
+            break;
+        }
         if (vector == NULL){
             for (j = 0; j < i; j ++){
                 free(head[j]);
@@ -110,7 +115,7 @@ void initialize_globals_file(char *filename){
     linelen = getline(&line, &size, file);
     if (linelen < 0){
         printf(error_msg);
-        free(line);
+        /*free(line);*/
         exit(-1);
     }
     d = count_char(line, linelen, ',') + 1;
