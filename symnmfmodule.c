@@ -5,7 +5,15 @@
 #include "symnmf.h"
 #include "utils.h"
 
-
+/**
+ * builds a PyObject from a matrix
+ * 
+ * mat: the matrix to build from
+ * rows: the number of rows in the matrix
+ * columns: the number of columns in the matrix
+ * 
+ * returns: a PyObject pointer for the matrix
+ */
 static PyObject* python_matrix_from_c(double** mat, int rows, int columns){
     PyObject* result;
     PyObject* row;
@@ -26,6 +34,15 @@ static PyObject* python_matrix_from_c(double** mat, int rows, int columns){
     return result;
 }
 
+/**
+ * builds a matrix from a PyObject containing a list of lists
+ * 
+ * matrix: the list of lists
+ * length: the number of lists
+ * width: the number of elements in each list
+ * 
+ * returns: the matrix as a double**
+ */
 static double** parse_input_matrix(PyObject *matrix, int length, int width){
     PyObject *item;
     PyObject *inner_item;
@@ -48,37 +65,13 @@ static double** parse_input_matrix(PyObject *matrix, int length, int width){
     return result;
 }
 
-static double** parse_input_vectors(PyObject *lst, int n, int d){
-    double **head;
-    PyObject *item;
-    PyObject *inner_item;
-    double num;
-    int j;
-    int k;
-    head = (double**)malloc(sizeof(double*)*n);
-    if (head == NULL){
-        printf(error_msg);
-        exit(-1);
-    }
-    for (j = 0; j < n; j++) {
-        head[j] = (double*)malloc(sizeof(double)*d);
-        if (head[j] == NULL){
-            printf(error_msg);
-            for (k = 0; k < j; k++) {
-                free(head[k]);
-            }
-            free(head);
-            exit(-1);
-        }
-        item = PyList_GetItem(lst, j);
-        for (k = 0; k < d; k++) {
-            inner_item = PyList_GetItem(item, k);
-            num = PyFloat_AsDouble(inner_item);
-            head[j][k] = num;
-        }
-    }
-    return head;
-}
+/**
+ * the module function for python: sym()
+ * 
+ * assumes that the arguments passed from python is a single list of lists, containing the vectors in the database
+ * 
+ * returns: a PyObject representing the similarity matrix
+ */
 
 static PyObject* sym(PyObject* self, PyObject *args)
 {
@@ -99,7 +92,7 @@ static PyObject* sym(PyObject* self, PyObject *args)
     }
     /*d = PyList_Size(PyList_GetItem(lst, 0));*/
     d = PyObject_Length(PyList_GetItem(lst, 0));
-    head = parse_input_vectors(lst, n, d);
+    head = parse_input_matrix(lst, n, d);
     mat = sym_wrapper(head, 1, n, d);
     if (mat == NULL){
         free_matrix(head, n);
@@ -112,6 +105,13 @@ static PyObject* sym(PyObject* self, PyObject *args)
     return return_matrix;
 }
 
+/**
+ * the module function for python: ddg()
+ * 
+ * assumes that the arguments passed from python is a single list of lists, containing the vectors in the database
+ * 
+ * returns: a PyObject representing the diagonal degree matrix
+ */
 static PyObject* ddg(PyObject* self, PyObject *args)
 {
     PyObject *lst;
@@ -131,7 +131,7 @@ static PyObject* ddg(PyObject* self, PyObject *args)
         exit(-1);
     }
     d = PyObject_Length(PyList_GetItem(lst, 0));
-    head = parse_input_vectors(lst, n, d);
+    head = parse_input_matrix(lst, n, d);
     diag = ddg_wrapper(head, 1, n, d);
     if (diag == NULL){
         free_matrix(head, n);
@@ -144,6 +144,13 @@ static PyObject* ddg(PyObject* self, PyObject *args)
     return return_matrix;
 }
 
+/**
+ * the module function for python: norm()
+ * 
+ * assumes that the arguments passed from python is a single list of lists, containing the vectors in the database
+ * 
+ * returns: a PyObject representing the normalized similarity matrix
+ */
 static PyObject* norm(PyObject* self, PyObject *args)
 {
     PyObject *lst;
@@ -163,7 +170,7 @@ static PyObject* norm(PyObject* self, PyObject *args)
     }
     d = PyObject_Length(PyList_GetItem(lst, 0));
 
-    head = parse_input_vectors(lst, n, d);
+    head = parse_input_matrix(lst, n, d);
     norm_mat = norm_wrapper(head, 1, n, d);
     if (norm_mat == NULL){
         free_matrix(head, n);
@@ -176,6 +183,14 @@ static PyObject* norm(PyObject* self, PyObject *args)
     return return_mat;
 }
 
+/**
+ * the module function for python: symnmf()
+ * 
+ * assumes that the arguments passed from python are the normalized similarity matrix, an initial H, and k 
+ * k represents the number of columns in the initial H
+ * 
+ * returns: a PyObject representing the result of the SYMNMF algorithm; the factorization H
+ */
 static PyObject* symnmf(PyObject* self, PyObject *args){
     PyObject *W_matrix;
     PyObject *initial_H;

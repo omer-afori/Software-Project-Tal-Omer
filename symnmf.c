@@ -9,9 +9,21 @@
 #include "defs.h"
 #include "utils.h"
 
+
+/**
+ * n is the number of vectors in the file
+ * d is the dimension of the vectors, which is assumed to be standard across all the vectors
+ */
 int n = 0;
 int d = 0;
 
+/**
+ * gets an open file to read from, reads a single line from it, and returns a double* that holds the vector represented in the line 
+ * 
+ * file: the file to read from
+ * 
+ * returns: the vector represented in the line as a double*
+ */
 double* get_vector(FILE *file){
 	char *lineptr = NULL;
 	size_t size = 0;
@@ -55,7 +67,13 @@ double* get_vector(FILE *file){
 	return vector;
 }
 
-
+/**
+ * handles general initialization for parameters in the algorithm - the list of vectors (matrix) and the globals n and d
+ * 
+ * filename: the name of file to read from
+ * 
+ * returns: double** a buffer of vectors (matrix, n by d)
+ */
 double** initialize(char* filename){
     double **head;
     initialize_globals_file(filename);
@@ -63,6 +81,13 @@ double** initialize(char* filename){
     return head;
 }
 
+/**
+ * initializes the buffer of vectors from the file
+ * 
+ * filename: the file to read from
+ * 
+ * returns: a double** containing all the vectors in the file
+ */
 double** initialize_vectors(char* filename){
     double** head;
 	double* vector;
@@ -102,6 +127,11 @@ double** initialize_vectors(char* filename){
     return head;
 }   
 
+/**
+ * initializes the globals n and d as explained above
+ * 
+ * filename: the file to read from
+ */
 void initialize_globals_file(char *filename){
     size_t size = 0; 
     int count;
@@ -132,9 +162,12 @@ void initialize_globals_file(char *filename){
     fclose(file);
 }
 
-
-
-
+/**
+ * calculates a coordinate in the symetric matrix, as instructed in the algorithm
+ * 
+ * u: the first vector in the formula
+ * v: the second vector in the formula
+ */
 double sym_mat_formula(double* u, double* v){
     double inner;
     if (u == v)
@@ -143,6 +176,13 @@ double sym_mat_formula(double* u, double* v){
     return exp(inner);
 }
 
+/**
+ * calculates the first step of the algorithm - similarity matrix
+ * 
+ * vectors: the list of vectors from the database
+ * 
+ * returns: the similarity matrix 
+ */
 double** calc_sym(double** vectors){
     int i, j; 
     double** head;
@@ -158,6 +198,13 @@ double** calc_sym(double** vectors){
     return head;
 }
 
+/**
+ * calculates the second step of the algorithm - the diagonal degree matrix
+ * 
+ * sym_matrix - the similarity matrix from the first step
+ * 
+ * returns: the diagonal degree matrix
+ */
 double** calc_ddg(double** sym_matrix){
     double** head;
     int i, j;
@@ -176,6 +223,11 @@ double** calc_ddg(double** sym_matrix){
     return head;
 }
 
+/**
+ * calculates the (-1/2) power of a diagonal matrix (inplace)
+ * 
+ * head: the pointer to the matrix
+ */
 void inverse_sqrt_diag_mat(double** head){
     int i; 
     for(i = 0; i < n; i++){
@@ -184,6 +236,14 @@ void inverse_sqrt_diag_mat(double** head){
 
 }
 
+/**
+ * calculate the third step of the algorithm - the normalized similarity matrix
+ * 
+ * sym_matrix: the similarity matrix from the first step of the algorithm
+ * ddg_matrix: the diagonal degree matrix from the second step of the algorithm
+ * 
+ * returns: the normalized similarity matrix W
+ */
 double** calc_norm(double** sym_matrix, double** ddg_matrix){
     double **DA;
     double **result;
@@ -194,6 +254,15 @@ double** calc_norm(double** sym_matrix, double** ddg_matrix){
     return result;
 }
 
+/**
+ * calculate the final step of the algorithm - the optimized factorization matrix H
+ * 
+ * w_matrix: the normalized similarity matrix
+ * H_matrix: the initial H matrix
+ * k: the number of columns in H
+ * 
+ * returns: the factorization of w_matrix, meaning the optimal H by the method in the instructions
+ */
 double** calc_symnmf(double** w_matrix, double** H_matrix, int k){
     int iter = 0; 
     double** h_t = H_matrix;
@@ -239,6 +308,20 @@ double** calc_symnmf(double** w_matrix, double** H_matrix, int k){
     return h_t_1;
 }
 
+/**
+ * wrapper function for goal=norm
+ * handles the flow of the algorithm - calls the previous steps, returns or prints the normalized similarity matrix
+ * 
+ * head: the list of vectors in database
+ * return_mat: a flag indicating whether to return the matrix, or print it and free it 
+ * length: the number of vectors in head
+ * dimension: the dimension of each vector in head
+ * 
+ * returns: 
+ *  if return_mat is 1, returns the normalized similar matrix
+ *  for an error, returns NULL
+ *  returns 1 if return_mat is 0 and there was no error
+ */
 double** norm_wrapper(double** head, int return_mat, int length, int dimension){
     double** sym_matrix;
     double** ddg_matrix;
@@ -270,6 +353,20 @@ double** norm_wrapper(double** head, int return_mat, int length, int dimension){
     }
 }
 
+/**
+ * wrapper function for goal=ddg
+ * handles the flow of the algorithm - calls the previous step and returns or prints the diagonal degree matrix
+ * 
+ * head: the list of vectors in database
+ * return_mat: a flag indicating whether to return the matrix, or print it and free it 
+ * length: the number of vectors in head
+ * dimension: the dimension of each vector in head
+ * 
+ * returns: 
+ *  if return_mat is 1, returns the diagonal degree matrix
+ *  for an error, returns NULL
+ *  returns 1 if return_mat is 0 and there was no error
+ */
 double** ddg_wrapper(double** head, int return_mat, int length, int dimension){
     double** sym_matrix;
     double** ddg_matrix;
@@ -294,6 +391,20 @@ double** ddg_wrapper(double** head, int return_mat, int length, int dimension){
     }
 }
 
+/**
+ * wrapper function for goal=sym
+ * handles the flow of the algorithm and returns or prints the similarity matrix
+ * 
+ * head: the list of vectors in database
+ * return_mat: a flag indicating whether to return the matrix, or print it and free it 
+ * length: the number of vectors in head
+ * dimension: the dimension of each vector in head
+ * 
+ * returns: 
+ *  if return_mat is 1, returns the similarity matrix
+ *  for an error, returns NULL
+ *  returns 1 if return_mat is 0 and there was no error
+ */
 double** sym_wrapper(double** head, int return_mat, int length, int dimension){
     double** sym_matrix;
     n = length;
@@ -324,6 +435,9 @@ int main(int argc, char *argv[]) {
 
     goal = argv[1];
     filename = argv[2];
+    /**
+     * in all following cases - the wrapperes return NULL for an error and thus an error message must be printed
+     */
     if (strncmp(goal, "sym", 4) == 0){
         head = initialize(filename);
         if (sym_wrapper(head, 0, n, d) == NULL){

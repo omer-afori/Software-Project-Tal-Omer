@@ -47,15 +47,11 @@ def main(arguments):
     vectors = symnmf.initialize_vectors(file_name)
     n = len(vectors)
     d = len(vectors[0])
+    
     symnmf_answer = symnmf.calculate_symnmf(vectors, k, False)
-    #print("symnmf done")
     symnmf_vector_to_cluster, symnmf_cluster_to_vectors = derive_clustering_from_symnmf(symnmf_answer, vectors)
-    #print("clusterting for symnmf done")
     kmeans_answer = kmeans.calc_kmeans(file_name, k, n, d, iterations, epsilon)
-    #print("kmeans done")
     kmeans_vector_to_cluster, kmeans_cluster_to_vectors = derive_clustering_from_centroids(kmeans_answer, vectors)
-    #print("clustering for kmeans done")
-
 
     X = np.array(vectors)
     labels = np.array(symnmf_vector_to_cluster)
