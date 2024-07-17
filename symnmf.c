@@ -266,7 +266,8 @@ double** norm_wrapper(double** head, int return_mat, int length, int dimension){
     else{
         /*print_matrix(norm_matrix, n, n);*/
         /*free_matrix(norm_matrix, n);*/
-        return (double**)1;
+        /*return (double**)1;*/
+        return NULL;
     }
 }
 
@@ -343,6 +344,8 @@ int main(int argc, char *argv[]) {
     else if (strncmp(goal, "norm", 5) == 0){
         head = initialize(filename);
         if (norm_wrapper(head, 0, n, d) == NULL){
+            printf("success\n");
+            exit(1);
             free_matrix(head, n);
             printf(error_msg);
             exit(-1);
