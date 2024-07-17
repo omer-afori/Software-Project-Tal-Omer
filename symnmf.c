@@ -83,6 +83,8 @@ double** initialize_vectors(char* filename){
     for (i=0; i<n; i++){
         vector = get_vector(file);
         if (vector == (double*)1){
+            printf("TEST1\n");
+            n = i;
             break;
         }
         if (vector == NULL){
