@@ -70,9 +70,9 @@ def update_centroids(file, centroids, n, d):
     return [average(cluster, d) for cluster in clusters]
 
 
-def convergence(centroids, new_centroids):
+def convergence(centroids, new_centroids, epsilon):
     for i in range(len(centroids)):
-        if distance(centroids[i], new_centroids[i]) >= 0.001:
+        if distance(centroids[i], new_centroids[i]) >= epsilon:
             return False
     return True
 
@@ -82,6 +82,16 @@ def print_vector(vector):
     for coordinate in vector:
         vector_string += ("%.4f" % coordinate) + ","
     print(vector_string[:-1])
+
+
+def calc_kmeans(input_file, k, n, d, iterations, epsilon):
+    centroids = initialize(input_file, k, d)
+    for i in range(iterations):
+        new_centroids = update_centroids(input_file, centroids, n, d)
+        if convergence(centroids, new_centroids, epsilon):
+            break
+        centroids = new_centroids
+    return centroids
 
 
 def main():
@@ -118,14 +128,7 @@ def main():
         exit()
     d = int(d)
 
-    centroids = initialize(input_file, k, d)
-
-    for i in range(iterations):
-        new_centroids = update_centroids(input_file, centroids, n, d)
-        if convergence(centroids, new_centroids):
-            break
-        centroids = new_centroids
-
+    centroids = calc_kmeans(input_file, k, n, d, iterations, 0.001)
     for centroid in centroids:
         print_vector(centroid)
 
