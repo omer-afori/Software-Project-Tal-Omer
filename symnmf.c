@@ -22,7 +22,7 @@ double* get_vector(FILE *file){
     int i;
 	linelen = getline(&lineptr, &size, file);
 	if(linelen < 0){
-		free(lineptr);
+		/*free(lineptr);*/
 		printf(error_msg);
 		return NULL;
 	}
@@ -35,7 +35,7 @@ double* get_vector(FILE *file){
 
 	vector = malloc(sizeof(double)*d);
 	if (!vector){
-        free(lineptr);
+        /*free(lineptr);*/
 		printf(error_msg);
 		return NULL;
 	}
@@ -49,7 +49,7 @@ double* get_vector(FILE *file){
 			counter++;
 		}
 	}
-    free(lineptr);
+    /*free(lineptr);*/
 	return vector;
 }
 
@@ -318,7 +318,9 @@ int main(int argc, char *argv[]) {
     goal = argv[1];
     filename = argv[2];
     if (strncmp(goal, "sym", 4) == 0){
+        printf("TEST1\n");
         head = initialize(filename);
+        printf("TEST2\n");
         if (sym_wrapper(head, 0, n, d) == NULL){
             free_matrix(head, n);
             printf(error_msg);
@@ -345,6 +347,7 @@ int main(int argc, char *argv[]) {
         printf(error_msg);
         exit(-1);
     }
+    printf("TEST3\n");
     free_matrix(head, n);
     return 1;
 }
