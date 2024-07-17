@@ -352,7 +352,7 @@ int main(int argc, char *argv[]) {
         printf(error_msg);
         exit(-1);
     }
-    free_matrix(head, n);
+    /*free_matrix(head, n);*/
     return 1;
 }
 
