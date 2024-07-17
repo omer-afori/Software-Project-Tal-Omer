@@ -22,7 +22,7 @@ double* get_vector(FILE *file){
     int i;
 	linelen = getline(&lineptr, &size, file);
 	if(linelen < 0){
-		free(lineptr);
+		/*free(lineptr);*/
 		printf(error_msg);
 		return NULL;
 	}
@@ -35,7 +35,7 @@ double* get_vector(FILE *file){
 
 	vector = malloc(sizeof(double)*d);
 	if (!vector){
-        free(lineptr);
+        /*free(lineptr);*/
 		printf(error_msg);
 		return NULL;
 	}
@@ -49,7 +49,7 @@ double* get_vector(FILE *file){
 			counter++;
 		}
 	}
-    free(lineptr);
+    /*free(lineptr);*/
 	return vector;
 }
 
