@@ -65,9 +65,11 @@ def main(arguments):
     labels = np.array(kmeans_vector_to_cluster)
     kmeans_score = silhouette_score(X, labels)
 
+    to_print1 = "nmf: "  + ("%.4f" % symnmf_score)
+    to_print2 = "kmeans: "  + ("%.4f" % kmeans_score)
 
-    print("nmf:", symnmf_score)
-    print("kmeans:", kmeans_score)
+    print(to_print1)
+    print(to_print2)
 
     
 
