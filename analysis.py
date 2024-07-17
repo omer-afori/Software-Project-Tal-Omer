@@ -2,7 +2,7 @@ import symnmf
 import numpy as np
 import sys
 import kmeans
-
+from sklearn.metrics import silhouette_score
 
 iterations = 300
 epsilon = 1e-4
@@ -37,27 +37,6 @@ def derive_clustering_from_symnmf(answer_matrix, vectors):
     return vector_to_cluster, cluster_to_vectors
 
 
-def average_distance_vector_cluster(vector, cluster):
-    return sum([kmeans.distance(vector, v) for v in cluster]) / len(cluster)
-
-
-def silhouette_coefficients(vectors, i, vector_to_cluster, cluster_to_vectors):
-    vector = vectors[i]
-    my_cluster_index = vector_to_cluster[i]
-    my_cluster = cluster_to_vectors[my_cluster_index]
-    a = average_distance_vector_cluster(vector, my_cluster)
-    b_list =[]
-    for i in range(len(cluster_to_vectors)):
-        if i != my_cluster_index:
-            b_list.append(average_distance_vector_cluster(vector, cluster_to_vectors[i]))
-    b = min(b_list)
-    return (b-a)/max(a,b)
-
-
-def silhouette_score(vectors, vector_to_cluster, cluster_to_vectors):
-    return sum([silhouette_coefficients(vectors, i, vector_to_cluster, cluster_to_vectors) for i in range(len(vectors))]) / len(vectors)
-
-
 def main(arguments):
     if (len(arguments) != 3):
         print("An Error Has Occurred")
@@ -77,11 +56,19 @@ def main(arguments):
     kmeans_vector_to_cluster, kmeans_cluster_to_vectors = derive_clustering_from_centroids(kmeans_answer, vectors)
     #print("clustering for kmeans done")
 
-    symnmf_score = silhouette_score(vectors, symnmf_vector_to_cluster, symnmf_cluster_to_vectors)
-    kmeans_score = silhouette_score(vectors, kmeans_vector_to_cluster, kmeans_cluster_to_vectors)
+
+    X = np.array(vectors)
+    labels = np.array(symnmf_vector_to_cluster)
+    symnmf_score = silhouette_score(X, labels)
+
+    X = np.array(vectors)
+    labels = np.array(kmeans_vector_to_cluster)
+    kmeans_score = silhouette_score(X, labels)
+
 
     print("nmf:", symnmf_score)
     print("kmeans:", kmeans_score)
+
     
 
 if __name__ == "__main__":
