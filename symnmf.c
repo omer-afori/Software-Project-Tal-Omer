@@ -318,9 +318,12 @@ int main(int argc, char *argv[]) {
     goal = argv[1];
     filename = argv[2];
     if (strncmp(goal, "sym", 4) == 0){
+        printf("TEST1\n");
         head = initialize(filename);
+        printf("TEST2\n");
         if (sym_wrapper(head, 0, n, d) == NULL){
-            free_matrix(head, n);
+            printf("TEST3\n");
+            /*free_matrix(head, n);*/
             printf(error_msg);
             exit(-1);
         }
