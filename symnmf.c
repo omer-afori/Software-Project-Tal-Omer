@@ -13,8 +13,8 @@ int n = 0;
 int d = 0;
 
 double* get_vector(FILE *file){
-	char *lineptr = 0;
-	size_t size;
+	char *lineptr = NULL;
+	size_t size = 0;
 	int linelen;
 	int my_index = 0;
 	double* vector;
@@ -22,7 +22,7 @@ double* get_vector(FILE *file){
     int i;
 	linelen = getline(&lineptr, &size, file);
 	if(linelen < 0){
-		/*free(lineptr);*/
+		free(lineptr);
 		printf(error_msg);
 		return NULL;
 	}
@@ -37,7 +37,7 @@ double* get_vector(FILE *file){
 
 	vector = malloc(sizeof(double)*d);
 	if (!vector){
-        /*free(lineptr);*/
+        free(lineptr);
 		printf(error_msg);
 		return NULL;
 	}
@@ -51,7 +51,7 @@ double* get_vector(FILE *file){
 			counter++;
 		}
 	}
-    /*free(lineptr);*/
+    free(lineptr);
 	return vector;
 }
 
@@ -103,9 +103,9 @@ double** initialize_vectors(char* filename){
 }   
 
 void initialize_globals_file(char *filename){
-    size_t size; 
+    size_t size = 0; 
     int count;
-    char* line; 
+    char* line = NULL; 
     FILE *file;
     int linelen;
     char ch;
@@ -117,11 +117,11 @@ void initialize_globals_file(char *filename){
     linelen = getline(&line, &size, file);
     if (linelen < 0){
         printf(error_msg);
-        /*free(line);*/
+        free(line);
         exit(-1);
     }
     d = count_char(line, linelen, ',') + 1;
-    /*free(line);*/
+    free(line);
     count = 1; /* assume exactly one blank line at the end of the file */
     while ((ch = fgetc(file)) != EOF){
         if (ch == '\n'){
@@ -265,10 +265,8 @@ double** norm_wrapper(double** head, int return_mat, int length, int dimension){
     }
     else{
         print_matrix(norm_matrix, n, n);
-        exit(1);
-        /*free_matrix(norm_matrix, n);*/
-        /*return (double**)1;*/
-        return NULL;
+        free_matrix(norm_matrix, n);
+        return (double**)1;
     }
 }
 
@@ -345,8 +343,6 @@ int main(int argc, char *argv[]) {
     else if (strncmp(goal, "norm", 5) == 0){
         head = initialize(filename);
         if (norm_wrapper(head, 0, n, d) == NULL){
-            printf("success\n");
-            exit(1);
             free_matrix(head, n);
             printf(error_msg);
             exit(-1);
@@ -356,7 +352,7 @@ int main(int argc, char *argv[]) {
         printf(error_msg);
         exit(-1);
     }
-    /*free_matrix(head, n);*/
+    free_matrix(head, n);
     return 1;
 }
 
