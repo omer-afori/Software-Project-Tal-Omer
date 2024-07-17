@@ -300,7 +300,7 @@ double** sym_wrapper(double** head, int return_mat, int length, int dimension){
     }
     else{
         print_matrix(sym_matrix, n, n);
-        /*free_matrix(sym_matrix, n);*/
+        free_matrix(sym_matrix, n);
         return (double**)1;
     }
 }
@@ -345,7 +345,7 @@ int main(int argc, char *argv[]) {
         printf(error_msg);
         exit(-1);
     }
-    /*free_matrix(head, n);*/
+    free_matrix(head, n);
     return 1;
 }
 
