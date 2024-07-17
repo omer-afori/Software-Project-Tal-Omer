@@ -5,6 +5,7 @@ import os
 
 def get_vector(file):
     vector = file.readline().split(',')
+    print(vector)
     for coordinate in vector:
         if not is_float(coordinate):
             print("An Error Has Occurred")
