@@ -9,12 +9,10 @@ epsilon = 1e-4
 
 def derive_clustering_from_centroids(centroids, vectors):
     vector_to_cluster = []
-    cluster_to_vectors = [[] for i in range(len(centroids))]
     for vector in vectors:
         index = kmeans.find_closest_cluster(vector, centroids)
         vector_to_cluster.append(index)
-        cluster_to_vectors[index].append(vector)
-    return vector_to_cluster, cluster_to_vectors
+    return vector_to_cluster
     
 
 def max_index(arr):
@@ -29,12 +27,10 @@ def max_index(arr):
 
 def derive_clustering_from_symnmf(answer_matrix, vectors):
     vector_to_cluster = []
-    cluster_to_vectors = [[] for i in range(len(answer_matrix[0]))]
     for i in range(len(vectors)):
         index = max_index(answer_matrix[i])
         vector_to_cluster.append(index)
-        cluster_to_vectors[index].append(vectors[i])
-    return vector_to_cluster, cluster_to_vectors
+    return vector_to_cluster
 
 
 def main(arguments):
@@ -47,11 +43,11 @@ def main(arguments):
     vectors = symnmf.initialize_vectors(file_name)
     n = len(vectors)
     d = len(vectors[0])
-    
+
     symnmf_answer = symnmf.calculate_symnmf(vectors, k, False)
-    symnmf_vector_to_cluster, symnmf_cluster_to_vectors = derive_clustering_from_symnmf(symnmf_answer, vectors)
+    symnmf_vector_to_cluster = derive_clustering_from_symnmf(symnmf_answer, vectors)
     kmeans_answer = kmeans.calc_kmeans(file_name, k, n, d, iterations, epsilon)
-    kmeans_vector_to_cluster, kmeans_cluster_to_vectors = derive_clustering_from_centroids(kmeans_answer, vectors)
+    kmeans_vector_to_cluster = derive_clustering_from_centroids(kmeans_answer, vectors)
 
     X = np.array(vectors)
     labels = np.array(symnmf_vector_to_cluster)

@@ -35,13 +35,16 @@ def initialize_vectors(input_file):
             vectors.append(vector)
     return vectors
     
+
+#gets a matrix (list of lists) and returns the average of all entries in it
 def average_matrix(mat):
-    #gets a matrix (list of lists) and returns the average of all entries in it
     n = len(mat)
     m = len(mat[0])
     total = sum(sum(row) for row in mat)
     return total / (n * m)
 
+
+# a function to generate initial H matrix for symmetric NMF - needs to take into account the average of matrix entries and the desired number of components k
 def initialize_H(mat_avg, n ,k):
     ans = []
     for i in range(n):
@@ -52,6 +55,7 @@ def initialize_H(mat_avg, n ,k):
     return ans
 
 
+# a wrapper function for goal=symnmf - needs to get normalized similarity, and generate initial H
 def calculate_symnmf(vectors, k, print_flag):
     w_mat = mdl.norm(vectors)
     mat_avg = average_matrix(w_mat)
